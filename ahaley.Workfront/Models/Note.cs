@@ -8,13 +8,11 @@ using ahaley.Workfront.Utilities;
 
 namespace ahaley.Workfront.Models
 {
-    public class Note
+    public class Note : WorkfrontResource
     {
-        public string ID { get; set; }
+        public override string ResourceToken { get { return "note"; } }
 
         public Note[] Replies { get; set; }
-
-        public string ObjCode { get; set; }
 
         public string AttachObjCode { get; set; }
 

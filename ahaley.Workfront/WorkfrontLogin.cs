@@ -11,18 +11,43 @@ namespace ahaley.Workfront
         public async Task<bool> Login(WorkfrontConfiguration config)
         {
             this.config = config;
-            using (var client = new HttpClient()) {
+            using (var client = new HttpClient())
+            {
                 client.BaseAddress = new Uri(config.VersionedUrl);
                 var resultResponse = await GetApiKey(client);
-                if (resultResponse == null || !resultResponse.IsValid) {
+                if (resultResponse == null || !resultResponse.IsValid)
+                {
                     resultResponse = await GenerateApiKey(client);
                 }
-                if (resultResponse.IsValid) {
+                if (resultResponse.IsValid)
+                {
                     config.Token = resultResponse.Result;
-                    return true;
+
+                    var sessionResult = await GetSessionID(client);
+                    if (sessionResult != null)
+                    {
+                        config.SessionID = sessionResult.SessionID;
+                        return true;
+                    }
                 }
                 return false;
             }
+        }
+
+        async Task<LoginResponse> GetSessionID(HttpClient client)
+        {
+            string uri = string.Join("?", "login", string.Join("&",
+                string.Join("=", "username", config.Username),
+                string.Join("=", "password", config.Password)));
+
+            var response = await client.PostAsync(uri, null);
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            var loginResponse = await response.ParseScalar<LoginResponse>();
+            return loginResponse;
         }
 
         async Task<ResultResponse> GetApiKey(HttpClient client)
@@ -35,7 +60,8 @@ namespace ahaley.Workfront
 
             HttpResponseMessage response = await client.PutAsync(uri, null);
 
-            if (!response.IsSuccessStatusCode) {
+            if (!response.IsSuccessStatusCode)
+            {
                 return null;
             }
             ResultResponse userResponse = await response.ParseScalar<ResultResponse>();
@@ -52,7 +78,8 @@ namespace ahaley.Workfront
 
             var response = await client.PutAsync(uri, null);
 
-            if (!response.IsSuccessStatusCode) {
+            if (!response.IsSuccessStatusCode)
+            {
                 return null;
             }
             ResultResponse resultResponse = await response.ParseScalar<ResultResponse>();

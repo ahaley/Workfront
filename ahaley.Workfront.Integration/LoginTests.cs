@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 namespace ahaley.Workfront.Integration
 {
     [TestFixture]
-    public class LoginTests : ConfigCreator
+    public class LoginTests
     {
         [Test]
         public void Can_Retrieve_Project()
         {
-            var config = CreateConfig();
+            var config = WorkfrontConfiguration.CreateConfiguration();
 
             WorkfrontService service = null;
 

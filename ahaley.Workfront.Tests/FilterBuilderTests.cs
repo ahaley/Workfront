@@ -213,7 +213,27 @@ namespace ahaley.Workfront.Tests
             builder.IsNull("field1");
             builder.IsNull("field2");
             
-            Assert.AreEqual("field1_Mod=notnull&field2_Mod=notnull", builder.Uri);
+            Assert.AreEqual("field1_Mod=isnull&field2_Mod=isnull", builder.Uri);
+        }
+
+        [Test]
+        public void Limit_Parameter()
+        {
+            var builder = new FilterBuilder();
+            builder.Limit = 20;
+
+            Assert.AreEqual("$$LIMIT=20", builder.Uri);
+        }
+
+        [Test]
+        public void Limit_And_First_Parameters()
+        {
+            var builder = new FilterBuilder();
+            builder.Limit = 20;
+            builder.First = 21;
+
+            Assert.AreEqual("$$FIRST=21&$$LIMIT=20", builder.Uri);
+
         }
 
         void ExpectCorrectDateRangeFilter(string field, string opcode, Func<string, DateTime, List<string>> operation)

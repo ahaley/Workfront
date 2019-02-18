@@ -20,13 +20,24 @@ namespace ahaley.Workfront.Utilities
 
         public string Uri
         {
-            get {
+            get
+            {
                 var sb = new StringBuilder();
                 var parameters = new List<string>(Filter);
-                if (Fields != null && Fields.Count() > 0) {
+                if (Fields != null && Fields.Count() > 0)
+                {
                     parameters.Add(string.Join("=", "fields", string.Join(",", Fields)));
                 }
-                if (!string.IsNullOrWhiteSpace(ApiKey)) {
+                if (First.HasValue)
+                {
+                    parameters.Add(string.Join("=", "$$FIRST", First));
+                }
+                if (Limit.HasValue)
+                {
+                    parameters.Add(string.Join("=", "$$LIMIT", Limit));
+                }
+                if (!string.IsNullOrWhiteSpace(ApiKey))
+                {
                     parameters.Add(string.Join("=", "apiKey", ApiKey));
                 }
                 sb.Append(string.Join("&", parameters));
@@ -45,6 +56,10 @@ namespace ahaley.Workfront.Utilities
         public string ApiKey { get; set; }
 
         public string[] Fields { get; set; }
+
+        public int? Limit { get; set; }
+
+        public int? First { get; set; }
 
         public bool Equals(FilterBuilder builder)
         {
@@ -80,14 +95,16 @@ namespace ahaley.Workfront.Utilities
 
         public FilterBuilder AddConstraint(string field, DateTime date)
         {
-            if (ContainsDateRange) {
+            if (ContainsDateRange)
+            {
                 if (date > EndDate)
                     EndDate = date;
                 var weekPrior = date.AddDays(-7);
                 if (weekPrior < StartDate)
                     StartDate = weekPrior;
             }
-            else {
+            else
+            {
                 EndDate = date;
                 StartDate = date.AddDays(-7);
                 ContainsDateRange = true;

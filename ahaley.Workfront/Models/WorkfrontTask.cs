@@ -5,13 +5,19 @@ using System.Linq;
 
 namespace ahaley.Workfront.Models
 {
-    public class Task
+    public class WorkfrontTask : WorkfrontResource
     {
-        public string ID { get; set; }
+        public override string ResourceToken { get { return "task"; } }
 
-        public string Name { get; set; }
+        public static readonly string[] Fields = new string[] {
+            "*", "group:*", "documents:*"
+        };
 
-        public string ObjCode { get; set; }
+        public int TaskNumber { get; set; }
+
+        public string ParentID { get; set; }
+
+        public double PercentComplete { get; set; }
 
         [JsonConverter(typeof(WorkfrontDateConverter))]
         public DateTime? ActualCompletionDate { get; set; }
@@ -72,5 +78,10 @@ namespace ahaley.Workfront.Models
         public double Work { get; set; }
 
         public int WorkRequired { get; set; }
+
+        public Group Group { get; set; }
+
+        public Document[] Documents { get; set; }
+        
     }
 }
